@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:sec="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/>
+    <sec:http auto-config="true" use-expressions="false">
+<!--        <sec:http-basic/>-->
+        <sec:form-login
+            login-page="/login"
+            login-processing-url="/login"
+            username-parameter="custom_username"
+            password-parameter="custom_password"
+            default-target-url="/tasks/findall"
+            authentication-failure-url="/login?error=true"
+        />
+
+        <sec:logout logout-url="/logout"
+                    logout-success-url="/login?logout=true"/>
+
+        <sec:intercept-url pattern="/tasks/add" access="ROLE_ADMIN"/>
+        <sec:intercept-url pattern="/tasks/*" access="ROLE_USER"/>
+        <sec:intercept-url pattern="/**" access="ROLE_ANONYMOUS, ROLE_USER"/>
+    </sec:http>
+    <sec:authentication-manager>
+        <sec:authentication-provider>
+            <sec:user-service>
+                <sec:user name="user" password="pass" authorities="ROLE_USER"/>
+                <sec:user name="admin" password="pass" authorities="ROLE_USER, ROLE_ADMIN"/>
+            </sec:user-service>
+        </sec:authentication-provider>
+    </sec:authentication-manager>
+</beans>
